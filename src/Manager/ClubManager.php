@@ -18,4 +18,5 @@ class ClubManager
       return $this->clubRepository->findAll() ;
     }
 
+
 }

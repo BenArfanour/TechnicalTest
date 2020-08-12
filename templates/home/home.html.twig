@@ -1,11 +1,29 @@
 {% extends 'base.html.twig' %}
 
 {% block content %}
+
     {# total items count #}
     <div class="count">
        <h2> Nombre Total de club : {{ clubs.getTotalItemCount }} </h2>
       <i><b>NB:</b>cliquer sur le nom du club pour accéder au joueurs</i>
     </div>
+    <div class="loading"></div>
+    <div class="form-group">
+
+            <fieldset>
+                <legend>Choisir Saison :</legend>
+            <center><br><br>
+                {{form_start(form)}}
+                {{form_row(form.startdate, { attr:{ class:'js-datepicker' } })}}
+                {{form_row(form.enddate, { attr:{ class:'js-datepicker' } })}}
+                {{form_end(form)}}
+
+                <input type="submit" value="Rechercher" id="search" class="btn btn-primary"/>
+            </center>
+            </fieldset>
+
+    </div>
+
     <table class="table table-striped">
         <thead>
 
@@ -26,16 +44,53 @@
         {# table body #}
         {% for club in clubs %}
             <tr {% if loop.index is odd %}class="color"{% endif %}>
-                <td><img src="{{ club.images.url }}" class="rounded-circle" width="30px"></td>
+                <td><a href="#"><img src="{{ club.images.url }}" class="rounded-circle" width="30px"></a> </td>
                 <td>{{ club.id }}</td>
                 <td><a href="{{ path('palyer_by_club', { 'id': club.id}) }}" alt="cliquer ici">{{ club.name }}</a></td>
                 <td>{{ club.created | date('Y-m-d') }}, {{ club.updated| date('Y-m-d') }}</td>
             </tr>
         {% endfor %}
     </table>
-    <li href="#" class="list-group-item text-left">
         <div class="navigation text-center" >
             {{ knp_pagination_render(clubs) }}
         </div>
-    </li>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+
+    <script>
+        $(document).ready(function() {
+            $(".loading").hide();
+
+            $('.js-datepicker').datepicker({
+                format: 'yyyy-dd-mm',
+            });
+
+        });
+        $("#search").click(function(){
+
+           /* $(".loading").show();
+            var startDate = $("#saison_form_startdate").val();
+            var endDate = $("#saison_form_enddate").val();
+            var DATA = 'startdate=' + startDate +'endDate' + endDate ;
+            var  first =  {{ path('search_club_by_dates',{'startdate': 'startDate', 'enddate': 'endDate'})}} ;
+            var  second =   first.replace("startDate",startDate);
+            var  mainurl =   second.replace("startDate", endDate);
+
+
+
+            $.ajax({
+                type: "POST",
+                url: mainurl,
+                cache: false,
+                success: function(){
+                    alert('succes') ;
+                    // $('.table').html(data);
+                    $(".loading").hide();
+                }
+            });
+            return false;*/
+        });
+    </script>
+
 {% endblock %}
