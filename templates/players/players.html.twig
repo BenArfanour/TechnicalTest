@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    {# total items count #}
+    <div class="count">
+        <h2>Joueurs appartiennent au Club : {{ club.name }}</h2>
+        <h2> Total : {{ players.getTotalItemCount }} </h2>
+        <i><b>NB:</b>cliquer sur le nom du joueur pour accéder la liste  de ses clubs avec la saison associée, ainsi que ses statistiques (nombre de buts) </i>
+
+    </div>
+    <table class="table table-striped">
+        <thead>
+
+        <tr>
+            {# sorting of properties based on query components #}
+            <th>{{ knp_pagination_sortable(players, 'Id', 'a.id') }}</th>
+            <th{% if players.isSorted('a.Firstanme') %} class="sorted"{% endif %}>
+                {{ knp_pagination_sortable(players, 'Nom', 'a.firstanme') }}
+            </th>
+            <th{% if players.isSorted('a.Lastname') %} class="sorted"{% endif %}>
+                {{ knp_pagination_sortable(players, 'Prénom', 'a.Lastname') }}
+            </th>
+            <th{% if players.isSorted(['a.created', 'a.updated']) %} class="sorted"{% endif %}>
+                {{ knp_pagination_sortable(players, 'Date création et Date modification', ['a.created', 'a.update']) }}
+            </th>
+        </tr>
+
+        </thead>
+
+        {# table body #}
+        {% for player in players %}
+            <tr {% if loop.index is odd %}class="color"{% endif %}>
+                <td>{{ player.id }}</td>
+                <td><a href="{{ path('club_season_by_player', { 'id': player.id}) }}">{{ player.firstname }}</a></td>
+                <td>{{ player.lastname }}</td>
+                <td>{{ player.created | date('Y-m-d') }}, {{ player.updated| date('Y-m-d') }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <li href="#" class="list-group-item text-left">
+        <div class="navigation text-center" >
+            {{ knp_pagination_render(players) }}
+        </div>
+    </li>
+{% endblock %}

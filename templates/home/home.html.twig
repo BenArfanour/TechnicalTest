@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    {# total items count #}
+    <div class="count">
+       <h2> Nombre Total de club : {{ clubs.getTotalItemCount }} </h2>
+      <i><b>NB:</b>cliquer sur le nom du club pour accéder au joueurs</i>
+    </div>
+    <table class="table table-striped">
+        <thead>
+
+        <tr>
+            {# sorting of properties based on query components #}
+            <th>Logo</th>
+            <th>{{ knp_pagination_sortable(clubs, 'Id', 'a.id') }}</th>
+            <th{% if clubs.isSorted('a.Name') %} class="sorted"{% endif %}>
+                {{ knp_pagination_sortable(clubs, 'Nom Club', 'a.name') }}
+            </th>
+            <th{% if clubs.isSorted(['a.created', 'a.updated']) %} class="sorted"{% endif %}>
+                {{ knp_pagination_sortable(clubs, 'Date création et Date modification', ['a.created', 'a.update']) }}
+            </th>
+        </tr>
+
+        </thead>
+
+        {# table body #}
+        {% for club in clubs %}
+            <tr {% if loop.index is odd %}class="color"{% endif %}>
+                <td><img src="{{ club.images.url }}" class="rounded-circle" width="30px"></td>
+                <td>{{ club.id }}</td>
+                <td><a href="{{ path('palyer_by_club', { 'id': club.id}) }}" alt="cliquer ici">{{ club.name }}</a></td>
+                <td>{{ club.created | date('Y-m-d') }}, {{ club.updated| date('Y-m-d') }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <li href="#" class="list-group-item text-left">
+        <div class="navigation text-center" >
+            {{ knp_pagination_render(clubs) }}
+        </div>
+    </li>
+{% endblock %}

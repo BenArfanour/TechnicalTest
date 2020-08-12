@@ -25,7 +25,7 @@ class club
     private $name;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="string")
      */
     private $specifcnumber;
 
@@ -34,19 +34,20 @@ class club
      */
     private $goalnumber;
 
+
     /**
-     * One club has many players. This is the inverse side.
-     * @ORM\OneToMany(targetEntity="App\Entity\player", mappedBy="club")
+     * Many Clubs have Many Players.
+     * @ORM\ManyToMany(targetEntity="App\Entity\player", mappedBy="clubs")
      */
     private $players;
 
 
     /**
-     * Many Clubs have Many Seasons.
-     * @ORM\ManyToMany(targetEntity="App\Entity\saison", inversedBy="clubs")
-     * @ORM\JoinTable(name="clubs_seasons")
+     * Many seasons have one club. This is the owning side.
+     * @ORM\ManyToOne(targetEntity="App\Entity\saison", inversedBy="clubs")
+     * @ORM\JoinColumn(name="saison_id", referencedColumnName="id")
      */
-    private $seasons;
+    private $season;
 
     /**
      * @ORM\Column(name="updatedAt", type="datetime", nullable=true)
@@ -59,15 +60,13 @@ class club
     private $created;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\images", mappedBy="clubs",cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\images", inversedBy="clubs")
      */
     private $images;
 
     public function __construct()
     {
         $this->players = new ArrayCollection();
-        $this->seasons = new ArrayCollection();
-        $this->images = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -75,12 +74,12 @@ class club
         return $this->id;
     }
 
-    public function getSpecifcnumber(): ?int
+    public function getSpecifcnumber()
     {
         return $this->specifcnumber;
     }
 
-    public function setSpecifcnumber(int $specifcnumber): self
+    public function setSpecifcnumber(string $specifcnumber): self
     {
         $this->specifcnumber = $specifcnumber;
         return $this;
@@ -170,7 +169,7 @@ class club
     {
         if (!$this->players->contains($player)) {
             $this->players[] = $player;
-            $player->setClub($this);
+            $player->addClub($this);
         }
 
         return $this;
@@ -180,73 +179,36 @@ class club
     {
         if ($this->players->contains($player)) {
             $this->players->removeElement($player);
-            // set the owning side to null (unless already changed)
-            if ($player->getClub() === $this) {
-                $player->setClub(null);
-            }
+            $player->removeClub($this);
         }
 
         return $this;
     }
 
-    /**
-     * @return Collection|saison[]
-     */
-    public function getSeasons(): Collection
+    public function getSeason(): ?saison
     {
-        return $this->seasons;
+        return $this->season;
     }
 
-    public function addSeason(saison $season): self
+    public function setSeason(?saison $season): self
     {
-        if (!$this->seasons->contains($season)) {
-            $this->seasons[] = $season;
-        }
+        $this->season = $season;
 
         return $this;
     }
 
-    public function removeSeason(saison $season): self
-    {
-        if ($this->seasons->contains($season)) {
-            $this->seasons->removeElement($season);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|images[]
-     */
-    public function getImages(): Collection
+    public function getImages(): ?images
     {
         return $this->images;
     }
 
-    public function addImage(images $image): self
+    public function setImages(?images $images): self
     {
-        if (!$this->images->contains($image)) {
-            $this->images[] = $image;
-            $image->setClubs($this);
-        }
+        $this->images = $images;
 
         return $this;
     }
 
-    public function removeImage(images $image): self
-    {
-        if ($this->images->contains($image)) {
-            $this->images->removeElement($image);
-            // set the owning side to null (unless already changed)
-            if ($image->getClubs() === $this) {
-                $image->setClubs(null);
-            }
-        }
-
-        return $this;
-    }
-
-   
 
 
 }

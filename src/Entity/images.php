@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -21,10 +23,22 @@ class images
      */
     private $name;
 
+
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\club", inversedBy="images")
+     * @ORM\Column(type="string", length=255)
+     */
+    private $url;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\club", mappedBy="images",cascade={"persist"})
      */
     private $clubs;
+
+    public function __construct()
+    {
+        $this->clubs = new ArrayCollection();
+    }
+
 
     public function getId(): ?int
     {
@@ -43,17 +57,56 @@ class images
         return $this;
     }
 
-    public function getClubs(): ?club
+    /**
+     * @return Collection|club[]
+     */
+    public function getClubs(): Collection
     {
         return $this->clubs;
     }
 
-    public function setClubs(?club $clubs): self
+    public function addClub(club $club): self
     {
-        $this->clubs = $clubs;
+        if (!$this->clubs->contains($club)) {
+            $this->clubs[] = $club;
+            $club->setImages($this);
+        }
 
         return $this;
     }
+
+    public function removeClub(club $club): self
+    {
+        if ($this->clubs->contains($club)) {
+            $this->clubs->removeElement($club);
+            // set the owning side to null (unless already changed)
+            if ($club->getImages() === $this) {
+                $club->setImages(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * @param mixed $url
+     */
+    public function setUrl($url): void
+    {
+        $this->url = $url;
+    }
+
+
+
+
 
 
 }

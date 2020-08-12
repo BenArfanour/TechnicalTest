@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\PlayerRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -28,14 +30,12 @@ class player
      */
     private $lastname;
 
-
     /**
-     * Many clubs have one player. This is the owning side.
-     * @ORM\ManyToOne(targetEntity="App\Entity\club", inversedBy="players")
-     * @ORM\JoinColumn(name="club_id", referencedColumnName="id")
+     * Many Players have Many Clubs.
+     * @ORM\ManyToMany(targetEntity="App\Entity\club", inversedBy="players")
+     * @ORM\JoinTable(name="players_clubs")
      */
-    private $club;
-
+    private $clubs;
 
     /**
      * @ORM\Column(name="updatedAt", type="datetime", nullable=true)
@@ -46,6 +46,11 @@ class player
      * @ORM\Column(name="createdAt", type="datetime", nullable=true)
      */
     private $created;
+
+    public function __construct()
+    {
+        $this->clubs = new ArrayCollection();
+    }
 
 
     public function getId(): ?int
@@ -120,17 +125,34 @@ class player
         }
     }
 
-    public function getClub(): ?club
+    /**
+     * @return Collection|club[]
+     */
+    public function getClubs(): Collection
     {
-        return $this->club;
+        return $this->clubs;
     }
 
-    public function setClub(?club $club): self
+    public function addClub(club $club): self
     {
-        $this->club = $club;
+        if (!$this->clubs->contains($club)) {
+            $this->clubs[] = $club;
+        }
 
         return $this;
     }
 
+    public function removeClub(club $club): self
+    {
+        if ($this->clubs->contains($club)) {
+            $this->clubs->removeElement($club);
+        }
+
+        return $this;
+    }
+
+
+
+    
 
 }

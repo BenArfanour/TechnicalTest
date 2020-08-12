@@ -19,6 +19,12 @@ class saison
      */
     private $id;
 
+
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $name;
+
     /**
      * @ORM\Column(type="datetime")
      */
@@ -30,10 +36,11 @@ class saison
     private $enddate;
 
     /**
-     * Many Seasons have Many Clubs.
-     * @ORM\ManyToMany(targetEntity="App\Entity\club", mappedBy="seasons")
+     * One club has many season. This is the inverse side.
+     * @ORM\OneToMany(targetEntity="App\Entity\club", mappedBy="season")
      */
     private $clubs;
+
 
     public function __construct()
     {
@@ -45,23 +52,23 @@ class saison
         return $this->id;
     }
 
-    public function getStartdate(): ?\DateTimeInterface
+    public function getStartdate()
     {
         return $this->startdate;
     }
 
-    public function setStartdate(\DateTimeInterface $startdate): self
+    public function setStartdate(\DateTime $startdate): self
     {
         $this->startdate = $startdate;
         return $this;
     }
 
-    public function getEnddate(): ?\DateTimeInterface
+    public function getEnddate()
     {
         return $this->enddate;
     }
 
-    public function setEnddate(\DateTimeInterface $enddate): self
+    public function setEnddate(\DateTime $enddate): self
     {
         $this->enddate = $enddate;
         return $this;
@@ -79,7 +86,7 @@ class saison
     {
         if (!$this->clubs->contains($club)) {
             $this->clubs[] = $club;
-            $club->addSeason($this);
+            $club->setSeason($this);
         }
 
         return $this;
@@ -89,11 +96,33 @@ class saison
     {
         if ($this->clubs->contains($club)) {
             $this->clubs->removeElement($club);
-            $club->removeSeason($this);
+            // set the owning side to null (unless already changed)
+            if ($club->getSeason() === $this) {
+                $club->setSeason(null);
+            }
         }
 
         return $this;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param mixed $name
+     */
+    public function setName($name): void
+    {
+        $this->name = $name;
+    }
+
+
+    
 
    
 }

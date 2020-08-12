@@ -1,0 +1,60 @@
+
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    {# total items count #}
+    <div class="count">
+        <h2> Joueur : {{ fullname.firstname }}  {{ fullname.lastname }} </h2>
+        {# Calcul Nombre de But #}
+        {% set TotalgoalNumber = 0 %}
+        {% for club in clubs %}
+            {% set TotalgoalNumber = TotalgoalNumber +  club.goalnumber%}
+        {% endfor %}
+        {# End Calcul#}
+        <h2> Statiqstique Nombre de but :  {{ TotalgoalNumber }}</h2>
+
+    </div>
+    <table class="table table-striped">
+        <thead>
+
+        <tr>
+            {# sorting of properties based on query components #}
+            <th>Logo</th>
+            <th>{{ knp_pagination_sortable(clubs, 'Id', 'a.id') }}</th>
+            <th{% if clubs.isSorted('a.Name') %} class="sorted"{% endif %}>
+                {{ knp_pagination_sortable(clubs, 'Nom Club', 'a.name') }}
+            </th>
+            <th>Numéro Spécifique</th>
+
+            <th{% if clubs.isSorted(['a.created', 'a.updated']) %} class="sorted"{% endif %}>
+                {{ knp_pagination_sortable(clubs, 'Date création et Date modification', ['a.created', 'a.update']) }}
+            </th>
+            <th>Saison</th>
+            <th>Statistique (Nombre de But)</th>
+
+
+        </tr>
+
+        </thead>
+
+
+
+        {# table body #}
+        {% for club in clubs %}
+            <tr {% if loop.index is odd %}class="color"{% endif %}>
+                <td><img src="{{ club.images.url }}" class="rounded-circle" width="30px"></td>
+                <td>{{ club.id }}</td>
+                <td>{{ club.name }}</td>
+                <td>{{ club.specifcnumber }}</td>
+                <td>{{ club.created | date('Y-m-d') }}, {{ club.updated| date('Y-m-d') }}</td>
+                <td>{% if club.season != null and club.season != null %}{{ club.season.startDate | date('Y-m-d') }}, {{ club.season.startDate | date('Y-m-d') }}{% else %}saison non saisie{% endif %}</td>
+                <td> {{  club.goalnumber }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <li href="#" class="list-group-item text-left">
+        <div class="navigation text-center" >
+            {{ knp_pagination_render(clubs) }}
+        </div>
+    </li>
+{% endblock %}
