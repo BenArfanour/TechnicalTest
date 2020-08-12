@@ -5,7 +5,7 @@ Test Technique Symfony4.4
 D'abord Modifier le username et le password et le nom de la base de données dans le ficheir .env 
 
 Ensuite lancer cette commande pour créer la base de données :
-#php bin/console doctrine:database:create
+# php bin/console doctrine:database:create
 
  lancer cette commande pour créer les entités et les mapping
 # php bin/console doctrine:schema:update --force 
