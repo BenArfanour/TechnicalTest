@@ -1,6 +1,9 @@
 # TechnicalTest Sportyma
 Test Technique Symfony4.4 
 
+En premier lieu il faut lancer la commande ci-dessous pour installer les dépendances graçe au fichier composer.json
+
+# composer install
 
 D'abord Modifier le username et le password et le nom de la base de données dans le ficheir .env 
 
